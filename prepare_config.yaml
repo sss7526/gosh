@@ -1,0 +1,21 @@
+outputs:
+  main.md:
+    - base_dir: "."
+      include: ["*.go"]
+      section_heading: "Main entrypoint"
+      description: "This is the main package and entrypoint for the program"
+  shell.md:
+    - base_dir: "shell"
+      include: ["*.go"]
+      section_heading: "Shell module"
+      description: "Contains startup, REPL logic, signal handling, and command parsing logic"
+  cmd.md:
+    - base_dir: "cmd"
+      include: ["*.go"]
+      section_heading: "Cmd module"
+      description: "Contains built-in command logic"
+  util.md:
+    - base_dir: "util"
+      section_heading: "Util module"
+      description: "Contains helper functions"
+      
