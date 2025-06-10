@@ -6,35 +6,28 @@ import (
 	"io"
 	"os"
 	"strings"
+	"errors"
 	"gosh/util"
-	// "gosh/shell/execution"
 )
 
-// type Shell struct {
-// 	CurrentPwd string				// Tracks current working directory
-// 	OldPwd		string				// Tracks previous working directory
-// 	Env			map[string]string	// Stores shell environment variables
-// 	Jobs		map[int]*Job		// Tracks fg/bg jobs
-// 	LastStatus	int 				// Stores the exit code of the last command
-// }
-
-func (sh *Shell) Start() {
+func (sh *Shell) Start() error {
 	
 	sh.SetupSignalHandling()
 
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print(GetPrompt()) // Display prompt
+		// Generate and display prompt
+		fmt.Print(GetPrompt()) 
+
 		// Read the command from the user
 		input, err := reader.ReadString('\n')
 		if err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				fmt.Println("exit") // Print "exit" like bash/zsh does
-				os.Exit(0)
+				return nil			// Graceful exit on EOF
 			}
-			fmt.Println("Error reading input:", err)
-			break
+			return fmt.Errorf("error reading input: %w", err)
 		}
 
 		args := strings.Fields(input) // Tokenize input
@@ -47,11 +40,14 @@ func (sh *Shell) Start() {
 		}
 
 		// Check if the command is built-in or external
-		if err := sh.HandleBuiltInCommand(args); err == nil {
+		if err = sh.HandleBuiltInCommand(args); err != nil {
+			if errors.Is(err, ErrNotBuiltInCommand) {
+				// Not a built-in, delegate to external command execution
+				sh.Execute(args)
+			} else {
+				fmt.Fprintf(os.Stderr, "gosh: %s\n", err)
+			}
 			continue
 		}
-
-		// If not a built-in command, handle execution
-		sh.Execute(args)
 	}
 }

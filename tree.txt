@@ -1,18 +1,19 @@
 ~/gosh
-├── cmd
-│   ├── cd.go
-│   ├── exit.go
-│   └── pwd.go
 ├── shell
 │   ├── builtins.go
+│   ├── cd.go
 │   ├── execution.go
+│   ├── exit.go
 │   ├── prompt.go
+│   ├── pwd.go
 │   ├── repl.go
-│   └── signal.go
+│   ├── shell.go
+│   ├── signal.go
+│   └── state.go
 ├── util
 │   └── path.go
 ├── go.mod
 ├── go.sum
 └── main.go
 
-4 directories, 12 files
+3 directories, 14 files

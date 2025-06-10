@@ -37,12 +37,11 @@ func (sh *Shell) Execute(args []string) {
 	}
 
 	sh.fgPid = pid
-	// *fgPid = pid
 
 	// Wait for child proc to complete (fg job)
 	var status syscall.WaitStatus
 	_, err = syscall.Wait4(pid, &status, 0, nil)
-	// *fgPid = 0
+	
 	sh.fgPid = 0
 	if err != nil {
 		fmt.Printf("Error waiting for process: %v\n", err)

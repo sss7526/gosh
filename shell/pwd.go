@@ -22,7 +22,6 @@ func (sh *Shell) Pwd(args []string) error {
 				physical = true
 				validOption = true
 			default:
-				fmt.Printf("pwd: invalid option -- '%c'\n", lastChar)
 				return fmt.Errorf("pwd: invalid option -- '%c'", lastChar)
 			}
 		}
@@ -37,11 +36,10 @@ func (sh *Shell) Pwd(args []string) error {
 	if physical {
 		wd, err := os.Getwd()
 		if err != nil {
-			fmt.Printf("pwd: error getting current working directory: %v\n", err)
+			return fmt.Errorf("pwd: error getting current working directory: %v", err)
 		}
 		realPath, err := filepath.EvalSymlinks(wd)
 		if err != nil {
-			fmt.Printf("pwd: error getting physical path: %v\n", err)
 			return fmt.Errorf("pwd: error getting physical path: %v", err)
 		}
 		fmt.Println(realPath)
