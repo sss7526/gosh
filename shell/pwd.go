@@ -1,4 +1,4 @@
-package cmd 
+package shell 
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-func Pwd(args []string) error {
+func (sh *Shell) Pwd(args []string) error {
 	var physical = false
 	validOption := false
 
@@ -46,7 +46,7 @@ func Pwd(args []string) error {
 		}
 		fmt.Println(realPath)
 	} else {
-		fmt.Println(currentPwd)
+		fmt.Println(sh.CurrentPwd)
 	}
 	return nil
 }

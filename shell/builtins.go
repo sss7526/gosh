@@ -2,19 +2,19 @@ package shell
 
 import (
 	"errors"
-	"gosh/cmd"
+	// "gosh/cmd"
 )
 
 // Map to store built-in command with their corresponding handlers
-var builtInCommands = map[string]func([]string) error{
-	"exit": cmd.Exit,
-	"cd": cmd.Cd,
-	"pwd": cmd.Pwd,
+var builtInCommands = map[string]func(*Shell, []string) error{
+	"exit": (*Shell).Exit,
+	"cd": (*Shell).Cd,
+	"pwd": (*Shell).Pwd,
 }
 
-func HandleBuiltInCommand(args []string) error {
+func (sh *Shell) HandleBuiltInCommand(args []string) error {
 	if handler, exists := builtInCommands[args[0]]; exists {
-		return handler(args[1:])
+		return handler(sh, args[1:])
 	}
 	return errors.New("not a built-in command")
 }

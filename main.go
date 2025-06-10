@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	shell.Start()
+	sh := shell.NewShell()
+	sh.Start()
+	// shell.Start()
 }

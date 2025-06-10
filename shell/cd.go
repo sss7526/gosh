@@ -1,40 +1,32 @@
-package cmd
+package shell
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
+	"fmt"
 	"strings"
 )
 
-var currentPwd string
-var oldPwd string
-
-func init() {
-	currentPwd, _ = os.Getwd()
-	oldPwd = os.Getenv("OLDPWD")
-}
-
-func Cd(args []string) error {
+func (sh *Shell) Cd(args []string) error {
 	var physical = false
 	var resolveErrorOnPhysical = false
 
 	// Handle the `cd -` case FIRST
 	if len(args) > 0 && args[0] == "-" {
-		if oldPwd == "" {
+		if sh.OldPwd == "" {
 			fmt.Println("cd: OLDPWD not set")
 			return fmt.Errorf("cd: OLDPWD not set")
 		}
-		targetDir := oldPwd
+		targetDir := sh.OldPwd
 		fmt.Println(targetDir) // Print the new directory for `cd -` which is what bash does
 		if err := os.Chdir(targetDir); err != nil {
 			fmt.Printf("cd: %v\n", err)
 			return fmt.Errorf("cd: %v", err)
 		}
-		oldPwd = currentPwd
-		currentPwd = targetDir
-		os.Setenv("OLDPWD", oldPwd)
-		os.Setenv("PWD", currentPwd)
+		sh.OldPwd = sh.CurrentPwd
+		sh.CurrentPwd = targetDir
+		os.Setenv("OLDPWD", sh.OldPwd)
+		os.Setenv("PWD", sh.CurrentPwd)
 		return nil
 	}
 
@@ -110,9 +102,9 @@ func Cd(args []string) error {
 	}
 
 	// Update `$PWD` and `$OLDPWD`
-	oldPwd = currentPwd
-	currentPwd = newPwd // Use logical (`-L`) or physical (`-P`) path as appropriate
-	os.Setenv("OLDPWD", oldPwd)
-	os.Setenv("PWD", currentPwd)
+	sh.OldPwd = sh.CurrentPwd
+	sh.CurrentPwd = newPwd // Use logical (`-L`) or physical (`-P`) path as appropriate
+	os.Setenv("OLDPWD", sh.OldPwd)
+	os.Setenv("PWD", sh.CurrentPwd)
 	return nil
 }

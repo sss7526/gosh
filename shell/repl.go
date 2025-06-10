@@ -10,8 +10,18 @@ import (
 	// "gosh/shell/execution"
 )
 
-func Start() {
-	SetupSignalHandling(&fgPid)
+// type Shell struct {
+// 	CurrentPwd string				// Tracks current working directory
+// 	OldPwd		string				// Tracks previous working directory
+// 	Env			map[string]string	// Stores shell environment variables
+// 	Jobs		map[int]*Job		// Tracks fg/bg jobs
+// 	LastStatus	int 				// Stores the exit code of the last command
+// }
+
+func (sh *Shell) Start() {
+	
+	sh.SetupSignalHandling()
+
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -36,20 +46,12 @@ func Start() {
 			args[i] = util.ExpandHomeDirectory(arg)
 		}
 
-		// Handlin built-ins
-		// if isBuiltInCommand(args) {
-		// 	runBuiltInCommand(args)
-		// } else {
-		// 	executeCommandLowLevel(args, &fgPid)
-		// }
-
 		// Check if the command is built-in or external
-		if err := HandleBuiltInCommand(args); err == nil {
+		if err := sh.HandleBuiltInCommand(args); err == nil {
 			continue
 		}
 
 		// If not a built-in command, handle execution
-		// execution.Execute(args)
-		Execute(args, &fgPid)
+		sh.Execute(args)
 	}
 }

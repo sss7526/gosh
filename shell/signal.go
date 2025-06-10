@@ -7,26 +7,29 @@ import (
 	"fmt"
 )
 
-var fgPid int = 0
+// var fgPid int = 0
 
-func SetupSignalHandling(fgPid *int) {
+func (sh *Shell) SetupSignalHandling() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTSTP)
 
 	go func() {
 		for sig := range signalChan {
-			if *fgPid == 0 {
+			sh.lock.Lock()
+			if sh.fgPid == 0 {
+				// No fg process, just print a fresh prompt
 				if sig == syscall.SIGINT || sig == syscall.SIGTSTP {
 					fmt.Print("\n" + GetPrompt())
 				}
+				sh.lock.Unlock()
 				continue
 			}
 
 			// Forward signal to the foreground process group
-			if err := syscall.Kill(-*fgPid, sig.(syscall.Signal)); err != nil {
+			if err := syscall.Kill(-sh.fgPid, sig.(syscall.Signal)); err != nil {
 				fmt.Printf("Error killing process: %v\n", err)
 			}
-
+			sh.lock.Unlock()
 		}
 	}()
 }
