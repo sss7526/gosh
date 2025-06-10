@@ -30,10 +30,23 @@ func (sh *Shell) Start() error {
 			return fmt.Errorf("error reading input: %w", err)
 		}
 
-		args := strings.Fields(input) // Tokenize input
+		// args := strings.Fields(input) // Tokenize input
+		// if len(args) == 0 {
+		// 	continue
+		// }
+
+		args, err := Tokenize(strings.TrimSpace(input))
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "gosh: %s\n", err)
+			continue
+		}
+
+		// Check for empty input
 		if len(args) == 0 {
 			continue
 		}
+
+		fmt.Printf("TOKENS: %v\n", args)
 
 		for i, arg := range args {
 			args[i] = util.ExpandHomeDirectory(arg)
